@@ -28,8 +28,6 @@ const movieSchema = new mongoose.Schema({
   description: {
     type: String,
     required: true,
-    // minlength: 1,
-    // maxlength: 747,
   },
   image: {
     type: String,
