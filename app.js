@@ -1,5 +1,8 @@
 require('dotenv').config();
 
+const { DB_URL} = process.env;
+
+const mongoUrl = process.env.NODE_ENV === 'production' ? DB_URL : 'dev-url'
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
@@ -11,7 +14,7 @@ const { requestLogger, errorLogger } = require('./middlewares/logger');
 
 const app = express();
 
-mongoose.connect('mongodb://localhost:27017/bitfilmsdb', {
+mongoose.connect(`mongodb://localhost:27017/${mongoUrl}`, {
   useNewUrlParser: true,
   useCreateIndex: true,
   useFindAndModify: false,
