@@ -21,6 +21,8 @@
   "dependencies": {
     "bcrypt": "^5.0.1",
     "celebrate": "^14.0.0",
+    "cors": "^2.8.5",
+    "dotenv": "^9.0.2",
     "eslint": "^7.26.0",
     "eslint-config-airbnb-base": "^14.2.1",
     "eslint-plugin-import": "^2.23.2",
