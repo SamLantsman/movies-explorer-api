@@ -6,6 +6,10 @@ const NotFoundError = require('../errors/not-fount-err');
 const BadRequestError = require('../errors/bad-request-err');
 const UnauthorizedError = require('../errors/unauthorized-error');
 const ConflictError = require('../errors/conflict-err');
+const {
+  createUserBadRequest, createUserConflict, loginUnauthorised, getUserNotFoundId, getUserNotFound,
+  updateUserNotFound, updateUserBadRequest, updateUserConflict,
+} = require('../constants/constants');
 
 const createUser = (req, res, next) => {
   const {
@@ -21,14 +25,14 @@ const createUser = (req, res, next) => {
       {
         email: user.email,
         _id: user._id,
-        name: name,
+        name: user.name,
       },
     }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        next(new BadRequestError('Переданы некорректные данные'));
+        next(new BadRequestError(createUserBadRequest));
       } else if (err.name === 'MongoError') {
-        next(new ConflictError('Пользовотель с таким емейлом уже зарегистрирован. Идите логиньтесь.'));
+        next(new ConflictError(createUserConflict));
       }
       next(err);
     });
@@ -46,41 +50,41 @@ const login = (req, res, next) => {
       res.send({ token });
     })
     .catch((err) => {
-      next(new UnauthorizedError('У вас не вышло войти. Возможно, вы не зарегистированы?'));
+      next(new UnauthorizedError(loginUnauthorised));
     });
 };
 
 const getUserInfo = (req, res, next) => UserModel.findById(req.user._id)
-  .orFail(() => new NotFoundError('Пользователь по заданному id отсутствует в базе'))
+  .orFail(() => new NotFoundError(getUserNotFoundId))
   .then((user) => {
     if (user.length === 0) {
-      throw new NotFoundError('Пользователей нету, сорян(');
+      throw new NotFoundError(getUserNotFound);
     } res.send(user);
   })
   .catch((err) => {
     next(err);
   });
 
-  const updateUserInfo = (req, res, next) => {
-    const { name, email } = req.body;
-    const id = req.user._id;
-    UserModel.findByIdAndUpdate(id, { name, email }, {
-      new: true,
-      runValidators: true,
+const updateUserInfo = (req, res, next) => {
+  const { name, email } = req.body;
+  const id = req.user._id;
+  UserModel.findByIdAndUpdate(id, { name, email }, {
+    new: true,
+    runValidators: true,
+  })
+    .orFail(new NotFoundError(updateUserNotFound))
+    .then((user) => {
+      res.send({ data: user });
     })
-      .orFail(new NotFoundError('Такого кользователя не сущесвует, попробуйте другой айди'))
-      .then((user) => {
-        res.send({ data: user });
-      })
-      .catch((err) => {
-        if (err.name === 'ValidationError' || err.reason === null) {
-          next(new BadRequestError('Переданы некорректные данные. Возможно, вы заполнили не все поля в теле запроса.'));
-        } else if (err.name === 'MongoError') {
-          next(new ConflictError('Такой емейл уже зарегистрирован в базе. Попробуйте использоват другой или залогиньтесь по указанным вами емейлом.'))
-        } next(err);
-      });
-  };
+    .catch((err) => {
+      if (err.name === 'ValidationError' || err.reason === null) {
+        next(new BadRequestError(updateUserBadRequest));
+      } else if (err.name === 'MongoError') {
+        next(new ConflictError(updateUserConflict));
+      } next(err);
+    });
+};
 
 module.exports = {
-   createUser, login, getUserInfo, updateUserInfo
+  createUser, login, getUserInfo, updateUserInfo,
 };

@@ -1,4 +1,7 @@
 const mongoose = require('mongoose');
+const {
+  checkURL, movieSchemaImageMessage, movieSchemaTrailerMessage, movieSchemaThumbnailMessage,
+} = require('../constants/constants');
 
 const movieSchema = new mongoose.Schema({
   country: {
@@ -16,13 +19,13 @@ const movieSchema = new mongoose.Schema({
   duration: {
     type: Number,
     required: true,
-    min:  1,
+    min: 1,
     max: 500,
   },
   year: {
     type: Number,
     required: true,
-    min:  1800,
+    min: 1800,
     max: 2021,
   },
   description: {
@@ -34,10 +37,9 @@ const movieSchema = new mongoose.Schema({
     required: true,
     validate: {
       validator(v) {
-        const regex = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)/;
-        return regex.test(v);
+        return checkURL.test(v);
       },
-      message: 'Неверный формат ссылки на картику, попробуйте еще разок',
+      message: movieSchemaImageMessage,
     },
   },
   trailer: {
@@ -45,10 +47,9 @@ const movieSchema = new mongoose.Schema({
     required: true,
     validate: {
       validator(v) {
-        const regex = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)/;
-        return regex.test(v);
+        return checkURL.test(v);
       },
-      message: 'Неверный формат ссылки на картику, попробуйте еще разок',
+      message: movieSchemaTrailerMessage,
     },
   },
   thumbnail: {
@@ -56,10 +57,9 @@ const movieSchema = new mongoose.Schema({
     required: true,
     validate: {
       validator(v) {
-        const regex = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)/;
-        return regex.test(v);
+        return checkURL.test(v);
       },
-      message: 'Неверный формат ссылки на картику, попробуйте еще разок',
+      message: movieSchemaThumbnailMessage,
     },
   },
   owner: {
@@ -73,11 +73,11 @@ const movieSchema = new mongoose.Schema({
   nameRU: {
     type: String,
     required: true,
-    },
-    nameEN: {
-      type: String,
-      required: true,
-      },
+  },
+  nameEN: {
+    type: String,
+    required: true,
+  },
 });
 
 module.exports = mongoose.model('movie', movieSchema);
