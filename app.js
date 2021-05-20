@@ -2,7 +2,7 @@ require('dotenv').config();
 
 const { DB_URL } = process.env;
 
-const mongoUrl = process.env.NODE_ENV === 'production' ? DB_URL : 'dev-url';
+const mongoUrl = process.env.NODE_ENV === 'production' ? DB_URL : 'mongodb://localhost:27017/bitfilmsdb';
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
@@ -19,8 +19,7 @@ mongoose.connect(mongoUrl, {
   useFindAndModify: false,
   autoIndex: true,
   useUnifiedTopology: true,
-})
-  .then(() => { console.log('База Mongoose подключилась'); });
+});
 
 const allRouters = require('./routes/index');
 const errorHandler = require('./middlewares/errorHandler');
@@ -34,8 +33,8 @@ app.use(requestLogger);
 const options = {
   origin: [
     'http://localhost:3000',
-    'http://api.sams.domain.students.nomoredomains.icu',
-    'http://sams.domain.students.nomoredomains.icu',
+    'http://api.sams.domain.students.nomoredomains.rocks',
+    'http://sams.domain.students.nomoredomains.rocks',
   ],
   methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE'],
   reflightContinue: false,
@@ -55,6 +54,4 @@ app.use(errors());
 
 app.use('*', errorHandler);
 
-app.listen(PORT, () => {
-  console.log(`App is listening on ${PORT} port`);
-});
+app.listen(PORT, () => {});

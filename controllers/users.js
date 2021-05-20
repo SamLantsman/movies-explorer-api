@@ -33,8 +33,9 @@ const createUser = (req, res, next) => {
         next(new BadRequestError(createUserBadRequest));
       } else if (err.name === 'MongoError') {
         next(new ConflictError(createUserConflict));
+      } else {
+        next(err);
       }
-      next(err);
     });
 };
 
@@ -49,7 +50,7 @@ const login = (req, res, next) => {
       );
       res.send({ token });
     })
-    .catch((err) => {
+    .catch(() => {
       next(new UnauthorizedError(loginUnauthorised));
     });
 };
@@ -81,7 +82,9 @@ const updateUserInfo = (req, res, next) => {
         next(new BadRequestError(updateUserBadRequest));
       } else if (err.name === 'MongoError') {
         next(new ConflictError(updateUserConflict));
-      } next(err);
+      } else {
+        next(err);
+      }
     });
 };
 
