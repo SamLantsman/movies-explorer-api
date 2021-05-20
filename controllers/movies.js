@@ -70,7 +70,7 @@ const deleteSavedMovie = (req, res, next) => {
       if (movie.owner.toString() !== req.user._id) {
         throw new ForbiddenError(deleteMovieForbidden);
       } else {
-        MovieModel.deleteOne(movie)
+        return MovieModel.deleteOne(movie)
           .then(() => res.send({ data: movie }));
       }
     })
